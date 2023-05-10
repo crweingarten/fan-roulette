@@ -19,6 +19,7 @@ function WebPlayback(props) {
     const [player, setPlayer] = useState(undefined);
     const [current_track, setTrack] = useState(track);
 
+
     useEffect(() => {
 
         const script = document.createElement("script");
@@ -58,12 +59,23 @@ function WebPlayback(props) {
                     (!state)? setActive(false) : setActive(true) 
                 });
 
+                console.log(state)
+
             }));
 
             player.connect();
 
         };
     }, []);
+
+    
+    const playSnippet = () => { 
+        player.seek(60 * 1000).then(() => {player.resume()}).then(() => setTimeout(() => player.pause(), 2000))
+        }
+
+    const playNext = () => {
+        player.nextTrack().then(() => {playSnippet()})
+        };
 
     if (!is_active) { 
         return (
@@ -80,21 +92,15 @@ function WebPlayback(props) {
                 <div className="container">
                     <div className="main-wrapper">
 
-                        <img src={current_track.album.images[0].url} className="now-playing__cover" alt="" />
-
                         <div className="now-playing__side">
                             <div className="now-playing__name">{current_track.name}</div>
                             <div className="now-playing__artist">{current_track.artists[0].name}</div>
 
-                            <button className="btn-spotify" onClick={() => { player.previousTrack() }} >
-                                &lt;&lt;
+                            <button className="btn-spotify" onClick={playSnippet} >
+                                { is_paused ? "PLAY" : "PLAYING" }
                             </button>
 
-                            <button className="btn-spotify" onClick={() => { player.togglePlay() }} >
-                                { is_paused ? "PLAY" : "PAUSE" }
-                            </button>
-
-                            <button className="btn-spotify" onClick={() => { player.nextTrack() }} >
+                            <button className="btn-spotify" onClick={playNext} >
                                 &gt;&gt;
                             </button>
                         </div>
